@@ -48,7 +48,7 @@ app.post('/api/routines', async (req, res) => {
   try {
     const { name, description } = req.body;
     const response = await axios.post(
-      `${BASE_URL}/routine`,
+      `${BASE_URL}/routine/`,
       { name, description },
       { headers: getHeaders() }
     );
