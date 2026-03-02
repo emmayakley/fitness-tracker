@@ -66,7 +66,7 @@ function FitnessPage() {
           <input
             type="text"
             className="form-control"
-            placeholder='"Routine Name (i.e. Push Day)'
+            placeholder='Routine Name (i.e. Push Day)'
             value={newRoutineName}
             onChange={(e) => setNewRoutineName(e.target.value)}
           />
