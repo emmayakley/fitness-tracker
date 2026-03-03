@@ -13,7 +13,6 @@ function FitnessPage() {
     try {
       const response = await fetch('http://localhost:3001/api/routines');
       const data = await response.json();
-
       // wger routines are stored in results
       setRoutines(data.results);
       setLoading(false);
@@ -26,15 +25,27 @@ function FitnessPage() {
   const createRoutine = async () => {
     if (!newRoutineName) return;
     try {
-      await fetch('http://localhost:3001/api/routines', {
+      const response = await fetch('http://localhost:3001/api/routines', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: newRoutineName }),
       });
+      const data = await response.json();
       setNewRoutineName('');
-      fetchRoutines();
+      await fetchRoutines();
     } catch (error) {
       console.error('Error creating routine:', error);
+    }
+  };
+
+  const deleteRoutine = async (id) => {
+    try {
+      await fetch(`http://localhost:3001/api/routines/${id}`, {
+        method: 'DELETE',
+      });
+      await fetchRoutines();
+    } catch (error) {
+      console.error('Error deleting routine:', error);
     }
   };
 
@@ -53,6 +64,12 @@ function FitnessPage() {
               <div className="card h-100">
                 <div className="card-body">
                   <h5 className="card-title">{routine.name}</h5>
+                  <button
+                    className="btn btn-danger btn-sm mt-2"
+                    onClick={() => deleteRoutine(routine.id)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -66,7 +83,7 @@ function FitnessPage() {
           <input
             type="text"
             className="form-control"
-            placeholder='Routine Name (i.e. Push Day)'
+            placeholder="Routine Name (i.e. Push Day)"
             value={newRoutineName}
             onChange={(e) => setNewRoutineName(e.target.value)}
           />
