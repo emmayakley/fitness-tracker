@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; //lets routines be clickable
 
 function FitnessPage() {
   const [routines, setRoutines] = useState([]);
   const [newRoutineName, setNewRoutineName] = useState('');
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchRoutines();
@@ -61,12 +63,19 @@ function FitnessPage() {
         ) : (
           routines.map((routine) => (
             <div key={routine.id} className="col-md-3 mb-3">
-              <div className="card h-100">
+              <div
+                className="card h-100"
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate(`/fitness/${routine.id}`)}
+              >
                 <div className="card-body">
                   <h5 className="card-title">{routine.name}</h5>
                   <button
                     className="btn btn-danger btn-sm mt-2"
-                    onClick={() => deleteRoutine(routine.id)}
+                    onClick={() => {
+                      e.stopPropagation();
+                      deleteRoutine(routine.id);
+                    }}
                   >
                     Delete
                   </button>

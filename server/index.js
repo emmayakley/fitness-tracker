@@ -23,6 +23,10 @@ const getHeaders = () => ({
   'Content-Type': 'application/json',
 });
 
+///////////////////////////////////////////////////////////////////////////////////////
+//Routine routes
+///////////////////////////////////////////////////////////////////////////////////////
+
 // GET all exercises
 app.get('/api/exercises', async (req, res) => {
   try {
@@ -93,6 +97,205 @@ app.delete('/api/routines/:id', async (req, res) => {
     res.json({ message: 'Routine deleted successfully' });
   } catch (error) {
     console.error('Error deleting routine:', error.response);
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+///////////////////////////////////////////////////////////////////////////////////////
+//Routine Details routes
+///////////////////////////////////////////////////////////////////////////////////////
+
+//GET a routine
+app.get('/api/routines/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await axios.get(`${BASE_URL}/routine/${id}/`, {
+      headers: getHeaders(),
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching routine:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//GET exercises for a routine
+app.get('/api/routines/:id/days', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await axios.get(`${BASE_URL}/day/`, {
+      headers: getHeaders(),
+      params: { routine: id },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching days:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//POST create a day in a routine
+//wger API structure requires a day defined to access exercises
+app.post('/api/routines/:id/days', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name } = req.body;
+
+    const response = await axios.post(
+      `${BASE_URL}/day/`,
+      {
+        name,
+        routine: id,
+      },
+      { headers: getHeaders() }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error creating routine:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//GET slots for a day
+app.get('/api/days/:dayId/slots', async (req, res) => {
+  try {
+    const { dayId } = req.params;
+    const response = await axios.get(`${BASE_URL}/slot/`, {
+      headers: getHeaders(),
+      params: { day: dayId },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching slots:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//POST create a slot in a day
+app.post('/api/days/:dayId/slots', async (req, res) => {
+  try {
+    const { dayId } = req.params;
+
+    const response = await axios.post(
+      `${BASE_URL}/slot/`,
+      {
+        day: dayId,
+      },
+      { headers: getHeaders() }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error creating routine:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//POST add exercise to slot
+app.post('/api/slots/:slotId/exercises', async (req, res) => {
+  try {
+    const { slotId } = req.params;
+    const { exerciseId } = req.body;
+
+    const response = await axios.post(
+      `${BASE_URL}/slot-entry/`,
+      {
+        slot: slotId,
+        exercise: exerciseId,
+      },
+      { headers: getHeaders() }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error creating routine:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//GET exercises list for searching
+app.get('/api/exercises/search', async (req, res) => {
+  try {
+    const { term } = req.query;
+    const response = await axios.get(`${BASE_URL}/exercise/search/`, {
+      headers: getHeaders(),
+      params: { term, language: 'english', format: 'json' },
+    });
+    //Debugging: delete later
+    console.log(
+      'Search results:',
+      JSON.stringify(response.data.suggestions[0])
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching slots:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// GET entries for a slot
+app.get('/api/slots/:slotId/entries', async (req, res) => {
+  try {
+    const { slotId } = req.params;
+    const response = await axios.get(`${BASE_URL}/slot-entry/`, {
+      headers: getHeaders(),
+      params: { slot: slotId },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching slot entries:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//DELETE a day
+app.delete('/api/days/:dayId', async (req, res) => {
+  try {
+    const { dayId } = req.params;
+    await axios.delete(`${BASE_URL}/day/${dayId}/`, {
+      headers: getHeaders(),
+    });
+    res.json({ message: 'Day deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting routine:', error.response);
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+app.get('/api/exercises/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const response = await axios.get(`${BASE_URL}/exerciseinfo/${id}/`, {
+      headers: getHeaders(),
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching slots:',
+      error.response?.data || error.message
+    );
     res.status(500).json({ error: error.response?.data || error.message });
   }
 });

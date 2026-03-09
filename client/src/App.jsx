@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import FitnessPage from './pages/FitnessPage';
 import TrackingPage from './pages/TrackingPage';
+import RoutineDetail from './pages/RoutineDetailsPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/fitness" element={<FitnessPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
+          <Route path="/fitness/:id" element={<RoutineDetail />} />
         </Routes>
       </div>
     </BrowserRouter>
