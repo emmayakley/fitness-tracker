@@ -11,6 +11,8 @@ function RoutineDetail() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedDayId, setSelectedDayId] = useState(null);
+  const [newDayName, setNewDayName] = useState('');
+  const [addingDay, setAddingDay] = useState(false);
 
   useEffect(() => {
     fetchRoutineDetails();
@@ -67,16 +69,19 @@ function RoutineDetail() {
   };
 
   const addDay = async () => {
+    if (!newDayName) return;
     try {
       const response = await fetch(
         `http://localhost:3001/api/routines/${id}/days`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: 'New Day' }),
+          body: JSON.stringify({ name: newDayName }),
         }
       );
       const data = await response.json();
+      setNewDayName('');
+      setAddingDay(false);
       await fetchRoutineDetails();
       setSelectedDayId(data.id);
     } catch (error) {
@@ -205,15 +210,26 @@ function RoutineDetail() {
                       ? '✓ Selected — add exercises below'
                       : 'Click to select'}
                   </p>
-                  <button
-                    className="btn btn-danger btn-sm mt-2"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteDay(day.id);
-                    }}
-                  >
-                    Delete Day
-                  </button>
+                  <div className="d-flex gap-2">
+                    <button
+                      className="btn btn-success btn-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/fitness/${id}/workout/${day.id}`);
+                      }}
+                    >
+                      Start Workout
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteDay(day.id);
+                      }}
+                    >
+                      Delete Day
+                    </button>
+                  </div>
                   {/* Display exercises */}
                   {day.slots && day.slots.length > 0 && (
                     <ul className="list-group mt-2">
@@ -231,9 +247,37 @@ function RoutineDetail() {
               </div>
             ))
           )}
-          <button className="btn btn-dark" onClick={addDay}>
-            + Add Day
-          </button>
+          {addingDay ? (
+            <div className="input-group mt-3">
+              <input
+                type="text"
+                className="form-control"
+                placeholder='"Day name (ie: Leg Day)'
+                value={newDayName}
+                onChange={(e) => setNewDayName(e.target.value)}
+                autoFocus
+              />
+              <button className="btn btn-dark" onClick={addDay}>
+                Save
+              </button>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  setAddingDay(false);
+                  setNewDayName('');
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              className="btn btn-dark mt-3"
+              onClick={() => setAddingDay(true)}
+            >
+              + Add Day
+            </button>
+          )}
         </div>
 
         {/*Add Exercise Panel*/}

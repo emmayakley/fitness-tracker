@@ -300,4 +300,79 @@ app.get('/api/exercises/:id', async (req, res) => {
   }
 });
 
+//====================Workout session=====================
+
+//POST create a workout session
+app.post('/api/workoutsession', async (req, res) => {
+  try {
+    const { date, notes } = req.body;
+
+    const response = await axios.post(
+      `${BASE_URL}/workoutsession/`,
+      {
+        date,
+        notes,
+        impression: '3',
+      },
+      { headers: getHeaders() }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error creating workout session:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//POST log a weight entry
+app.post('/api/weightentry', async (req, res) => {
+  try {
+    const { date, weight } = req.body;
+
+    const response = await axios.post(
+      `${BASE_URL}/weightentry/`,
+      {
+        date,
+        weight,
+      },
+      { headers: getHeaders() }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error logging weight entry:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//POST log exercise sets (aka reps and weight for an exercise)
+app.post('/api/workoutlog', async (req, res) => {
+  try {
+    const { exercise, sets, reps, weight, workoutsession } = req.body;
+
+    const response = await axios.post(
+      `${BASE_URL}/workoutlog/`,
+      {
+        exercise,
+        sets,
+        reps,
+        weight,
+        workoutsession,
+      },
+      { headers: getHeaders() }
+    );
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error logging workout:',
+      error.response?.data || error.message
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
 app.listen(3001, () => console.log('Server running on port 3001'));
