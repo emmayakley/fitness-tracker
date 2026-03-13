@@ -22,21 +22,21 @@ function RoutineDetail() {
     try {
       //get routine info
       const routinesRes = await fetch(
-        `http://localhost:3001/api/routines/${id}`
+        `http://localhost:3001/api/routines/${id}`,
       );
       const routineData = await routinesRes.json();
       setRoutine(routineData);
 
       //get the days for a routine
       const daysRes = await fetch(
-        `http://localhost:3001/api/routines/${id}/days`
+        `http://localhost:3001/api/routines/${id}/days`,
       );
       const daysData = await daysRes.json();
 
       const daysWithExercises = await Promise.all(
         daysData.results.map(async (day) => {
           const slotsRes = await fetch(
-            `http://localhost:3001/api/days/${day.id}/slots`
+            `http://localhost:3001/api/days/${day.id}/slots`,
           );
           const slotsData = await slotsRes.json();
 
@@ -44,7 +44,7 @@ function RoutineDetail() {
           const slotsWithEntries = await Promise.all(
             slotsData.results.map(async (slot) => {
               const entriesRes = await fetch(
-                `http://localhost:3001/api/slots/${slot.id}/entries`
+                `http://localhost:3001/api/slots/${slot.id}/entries`,
               );
               const entriesData = await entriesRes.json();
 
@@ -52,13 +52,13 @@ function RoutineDetail() {
                 entriesData.results.map(async (entry) => {
                   const name = await fetchExerciseName(entry.exercise);
                   return { ...entry, exerciseName: name };
-                })
+                }),
               );
               return { ...slot, entries: entriesWithNames };
-            })
+            }),
           );
           return { ...day, slots: slotsWithEntries };
-        })
+        }),
       );
       setDays(daysWithExercises);
       setLoading(false);
@@ -77,7 +77,7 @@ function RoutineDetail() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: newDayName }),
-        }
+        },
       );
       const data = await response.json();
       setNewDayName('');
@@ -97,10 +97,31 @@ function RoutineDetail() {
     }
     try {
       const response = await fetch(
-        `http://localhost:3001/api/exercises/search?term=${term}`
+        `http://localhost:3001/api/exercises/search?term=${term}`,
       );
       const data = await response.json();
-      setSearchResults(data.suggestions || []);
+      const results = data.suggestions || [];
+
+      // sort results to prioritize exact and starts-with matches
+      const sorted = results.sort((a, b) => {
+        const aName = a.value.toLowerCase();
+        const bName = b.value.toLowerCase();
+        const searchLower = term.toLowerCase();
+
+        // exact match comes first
+        if (aName === searchLower) return -1;
+        if (bName === searchLower) return 1;
+
+        // starts with search term comes second
+        if (aName.startsWith(searchLower) && !bName.startsWith(searchLower))
+          return -1;
+        if (bName.startsWith(searchLower) && !aName.startsWith(searchLower))
+          return 1;
+
+        // alphabetical order for everything else
+        return aName.localeCompare(bName);
+      });
+      setSearchResults(sorted);
     } catch (error) {
       console.error('Error searching exercises:', error);
     }
@@ -120,7 +141,7 @@ function RoutineDetail() {
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-        }
+        },
       );
       const slotData = await slotRes.json();
       console.log('Created slot:', slotData);
@@ -132,7 +153,7 @@ function RoutineDetail() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ exerciseId }),
-        }
+        },
       );
       const exerciseData = await exerciseRes.json();
       console.log('Added exercise:', exerciseData);
@@ -159,12 +180,12 @@ function RoutineDetail() {
   const fetchExerciseName = async (exerciseId) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/exercises/${exerciseId}`
+        `http://localhost:3001/api/exercises/${exerciseId}`,
       );
       const data = await response.json();
       //wger API translates the information, english is labeled as translation #2
       const englishTranslation = data.translations?.find(
-        (t) => t.language === 2
+        (t) => t.language === 2,
       );
       return englishTranslation?.name || `Exercise ${exerciseId}`;
     } catch (error) {

@@ -77,7 +77,7 @@ function ActiveWorkout() {
       setLogs(initialLogs);
       setLoading(false);
     } catch (error) {
-      console.error('Errir initialzing workout:', error);
+      console.error('Error initialzing workout:', error);
       setLoading(false);
     }
   };
@@ -137,7 +137,7 @@ function ActiveWorkout() {
   if (finished) {
     return (
       <div className="text-center mt-5">
-        <h2>Workout Complete! 🎉</h2>
+        <h2>Workout Complete!</h2>
         <p className="text-muted">Great work today!</p>
         <button
           className="btn btn-dark mt-3"
@@ -233,7 +233,7 @@ function ActiveWorkout() {
         className="btn btn-success btn-lg w-100 mb-5"
         onClick={finishWorkout}
       >
-        Finish Workout 🎉
+        Finish Workout
       </button>
     </div>
   );

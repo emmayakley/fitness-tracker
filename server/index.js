@@ -10,7 +10,7 @@ app.use(
     origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'DELETE', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-  })
+  }),
 );
 app.use(express.json());
 
@@ -75,13 +75,13 @@ app.post('/api/routines', async (req, res) => {
         end,
         is_public: false,
       },
-      { headers: getHeaders() }
+      { headers: getHeaders() },
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error creating routine:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -116,7 +116,7 @@ app.get('/api/routines/:id', async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching routine:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -134,7 +134,7 @@ app.get('/api/routines/:id/days', async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching days:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -153,13 +153,13 @@ app.post('/api/routines/:id/days', async (req, res) => {
         name,
         routine: id,
       },
-      { headers: getHeaders() }
+      { headers: getHeaders() },
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error creating routine:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -177,7 +177,7 @@ app.get('/api/days/:dayId/slots', async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching slots:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -193,13 +193,13 @@ app.post('/api/days/:dayId/slots', async (req, res) => {
       {
         day: dayId,
       },
-      { headers: getHeaders() }
+      { headers: getHeaders() },
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error creating routine:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -217,13 +217,13 @@ app.post('/api/slots/:slotId/exercises', async (req, res) => {
         slot: slotId,
         exercise: exerciseId,
       },
-      { headers: getHeaders() }
+      { headers: getHeaders() },
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error creating routine:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -240,13 +240,13 @@ app.get('/api/exercises/search', async (req, res) => {
     //Debugging: delete later
     console.log(
       'Search results:',
-      JSON.stringify(response.data.suggestions[0])
+      JSON.stringify(response.data.suggestions[0]),
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error fetching slots:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -264,7 +264,7 @@ app.get('/api/slots/:slotId/entries', async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching slot entries:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -294,7 +294,7 @@ app.get('/api/exercises/:id', async (req, res) => {
   } catch (error) {
     console.error(
       'Error fetching slots:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -314,13 +314,13 @@ app.post('/api/workoutsession', async (req, res) => {
         notes,
         impression: '3',
       },
-      { headers: getHeaders() }
+      { headers: getHeaders() },
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error creating workout session:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -337,13 +337,13 @@ app.post('/api/weightentry', async (req, res) => {
         date,
         weight,
       },
-      { headers: getHeaders() }
+      { headers: getHeaders() },
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error logging weight entry:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }
@@ -363,13 +363,49 @@ app.post('/api/workoutlog', async (req, res) => {
         weight,
         workoutsession,
       },
-      { headers: getHeaders() }
+      { headers: getHeaders() },
     );
     res.json(response.data);
   } catch (error) {
     console.error(
       'Error logging workout:',
-      error.response?.data || error.message
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//====================Tracking Page=====================
+
+//GET all of the workout logs
+app.get('/api/workoutlogs', async (req, res) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/workoutlog/`, {
+      headers: getHeaders(),
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching workout logs:',
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//GET workout logs for a specific exercise
+app.get('/api/workoutlogs/exercise/:exerciseId', async (req, res) => {
+  try {
+    const { exerciseId } = req.params;
+    const response = await axios.get(`${BASE_URL}/workoutlog/`, {
+      headers: getHeaders(),
+      params: { exercise: exerciseId },
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching exercise logs:',
+      error.response?.data || error.message,
     );
     res.status(500).json({ error: error.response?.data || error.message });
   }

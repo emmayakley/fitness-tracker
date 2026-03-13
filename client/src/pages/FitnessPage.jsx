@@ -72,7 +72,7 @@ function FitnessPage() {
                   <h5 className="card-title">{routine.name}</h5>
                   <button
                     className="btn btn-danger btn-sm mt-2"
-                    onClick={() => {
+                    onClick={(e) => {
                       e.stopPropagation();
                       deleteRoutine(routine.id);
                     }}
@@ -92,7 +92,7 @@ function FitnessPage() {
           <input
             type="text"
             className="form-control"
-            placeholder="Routine Name (i.e. Push Day)"
+            placeholder="Routine Name (i.e. Push Pull Legs)"
             value={newRoutineName}
             onChange={(e) => setNewRoutineName(e.target.value)}
           />
