@@ -14,8 +14,8 @@ function HomePage() {
   const fetchData = async () => {
     try {
       const [quoteRes, sessionRes] = await Promise.all([
-        fetch('http://localhost:3001/api/quote'),
-        fetch('http://localhost:3001/api/workoutsessions'),
+        fetch(`${import.meta.env.VITE_API_URL}/api/quote`),
+        fetch(`${import.meta.env.VITE_API_URL}/api/workoutsessions`),
       ]);
 
       const quoteData = await quoteRes.json();

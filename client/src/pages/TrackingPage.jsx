@@ -24,24 +24,29 @@ function TrackingPage() {
 
   const fetchWorkoutLogs = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/workoutlogs');
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/workoutlogs`,
+      );
       const data = await response.json();
       console.log('Workout logs:', JSON.stringify(data));
       setWorkoutLogs(data.results);
 
       //consistency data
-      const workoutsByDate = {};
+      const workoutsByWeek = {};
       data.results.forEach((log) => {
-        const date = log.date.split('T')[0];
-        workoutsByDate[date] = (workoutsByDate[date] || 0) + 1;
+        const date = new Date(log.date);
+        const monday = new Date(date);
+        monday.setDate(date.getDate() - date.getDay() + 1);
+        const weekKey = monday.toISOString().split('T')[0];
+        workoutsByWeek[weekKey] = (workoutsByWeek[weekKey] || 0) + 1;
       });
 
-      const consistency = Object.entries(workoutsByDate).map(
-        ([date, count]) => ({
-          date,
+      const consistency = Object.entries(workoutsByWeek)
+        .sort(([a], [b]) => new Date(a) - new Date(b))
+        .map(([week, count]) => ({
+          week: `Week of ${week}`,
           workouts: count,
-        }),
-      );
+        }));
       setConsistencyData(consistency);
 
       //get unique exercises from logs
@@ -51,7 +56,7 @@ function TrackingPage() {
       const exerciseNames = await Promise.all(
         uniqueExerciseIds.map(async (exerciseId) => {
           const res = await fetch(
-            `http://localhost:3001/api/exercises/${exerciseId}`,
+            `${import.meta.env.VITE_API_URL}/api/exercises/${exerciseId}`,
           );
           const exerciseData = await res.json();
           const englishTranslation = exerciseData.translations?.find(
@@ -74,7 +79,7 @@ function TrackingPage() {
   const fetchExerciseLogs = async (exerciseId) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/workoutlogs/exercise/${exerciseId}`,
+        `${import.meta.env.VITE_API_URL}/api/workoutlogs/exercise/${exerciseId}`,
       );
       const data = await response.json();
 
@@ -112,7 +117,7 @@ function TrackingPage() {
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={consistencyData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
+              <XAxis dataKey="week" />
               <YAxis />
               <Tooltip />
               <Legend />

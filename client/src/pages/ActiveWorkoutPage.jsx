@@ -21,12 +21,12 @@ function ActiveWorkout() {
       //create a workout session
       const today = new Date().toISOString().split('T')[0];
       const sessionRes = await fetch(
-        'http://localhost:3001/api/workoutsession',
+        `${import.meta.env.VITE_API_URL}/api/workoutsession`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ date: today, notes: '' }),
-        }
+        },
       );
       const sessionData = await sessionRes.json();
       console.log('Created session:', sessionData);
@@ -34,7 +34,7 @@ function ActiveWorkout() {
 
       //fetch exercises
       const slotsRes = await fetch(
-        `http://localhost:3001/api/days/${dayId}/slots`
+        `${import.meta.env.VITE_API_URL}/api/days/${dayId}/slots`,
       );
       const slotsData = await slotsRes.json();
 
@@ -44,18 +44,18 @@ function ActiveWorkout() {
           .filter((slot) => slot !== null)
           .map(async (slot) => {
             const entriesRes = await fetch(
-              `http://localhost:3001/api/slots/${slot.id}/entries`
+              `${import.meta.env.VITE_API_URL}/api/slots/${slot.id}/entries`,
             );
             const entriesData = await entriesRes.json();
             if (entriesData.results.length === 0) return null;
 
             const entry = entriesData.results[0];
             const exerciseRes = await fetch(
-              `http://localhost:3001/api/exercises/${entry.exercise}`
+              `${import.meta.env.VITE_API_URL}/api/exercises/${entry.exercise}`,
             );
             const exerciseData = await exerciseRes.json();
             const englishTranslation = exerciseData.translations?.find(
-              (t) => t.language === 2
+              (t) => t.language === 2,
             );
             const name =
               englishTranslation?.name ||
@@ -63,7 +63,7 @@ function ActiveWorkout() {
               `Exercise ${entry.exercise}`;
 
             return { id: entry.exercise, name, slotId: slot.id };
-          })
+          }),
       );
 
       const filtered = exercisesWithNames.filter((e) => e !== null);
@@ -113,7 +113,7 @@ function ActiveWorkout() {
         const sets = logs[exercise.id];
         for (const set of sets) {
           if (!set.reps || !set.weight) continue; // skip empty sets
-          await fetch('http://localhost:3001/api/workoutlog', {
+          await fetch(`${import.meta.env.VITE_API_URL}/api/workoutlog`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

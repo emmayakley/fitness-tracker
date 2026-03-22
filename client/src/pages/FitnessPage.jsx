@@ -13,7 +13,9 @@ function FitnessPage() {
 
   const fetchRoutines = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/routines');
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/routines`,
+      );
       const data = await response.json();
       // wger routines are stored in results
       setRoutines(data.results);
@@ -27,11 +29,14 @@ function FitnessPage() {
   const createRoutine = async () => {
     if (!newRoutineName) return;
     try {
-      const response = await fetch('http://localhost:3001/api/routines', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newRoutineName }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/routines`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newRoutineName }),
+        },
+      );
       const data = await response.json();
       setNewRoutineName('');
       await fetchRoutines();
@@ -42,7 +47,7 @@ function FitnessPage() {
 
   const deleteRoutine = async (id) => {
     try {
-      await fetch(`http://localhost:3001/api/routines/${id}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/routines/${id}`, {
         method: 'DELETE',
       });
       await fetchRoutines();

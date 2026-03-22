@@ -22,21 +22,21 @@ function RoutineDetail() {
     try {
       //get routine info
       const routinesRes = await fetch(
-        `http://localhost:3001/api/routines/${id}`,
+        `${import.meta.env.VITE_API_URL}/api/routines/${id}`,
       );
       const routineData = await routinesRes.json();
       setRoutine(routineData);
 
       //get the days for a routine
       const daysRes = await fetch(
-        `http://localhost:3001/api/routines/${id}/days`,
+        `${import.meta.env.VITE_API_URL}/api/routines/${id}/days`,
       );
       const daysData = await daysRes.json();
 
       const daysWithExercises = await Promise.all(
         daysData.results.map(async (day) => {
           const slotsRes = await fetch(
-            `http://localhost:3001/api/days/${day.id}/slots`,
+            `${import.meta.env.VITE_API_URL}/api/days/${day.id}/slots`,
           );
           const slotsData = await slotsRes.json();
 
@@ -44,7 +44,7 @@ function RoutineDetail() {
           const slotsWithEntries = await Promise.all(
             slotsData.results.map(async (slot) => {
               const entriesRes = await fetch(
-                `http://localhost:3001/api/slots/${slot.id}/entries`,
+                `${import.meta.env.VITE_API_URL}/api/slots/${slot.id}/entries`,
               );
               const entriesData = await entriesRes.json();
 
@@ -72,7 +72,7 @@ function RoutineDetail() {
     if (!newDayName) return;
     try {
       const response = await fetch(
-        `http://localhost:3001/api/routines/${id}/days`,
+        `${import.meta.env.VITE_API_URL}/api/routines/${id}/days`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -97,7 +97,7 @@ function RoutineDetail() {
     }
     try {
       const response = await fetch(
-        `http://localhost:3001/api/exercises/search?term=${term}`,
+        `${import.meta.env.VITE_API_URL}/api/exercises/search?term=${term}`,
       );
       const data = await response.json();
       const results = data.suggestions || [];
@@ -137,7 +137,7 @@ function RoutineDetail() {
       console.log('Adding exercise:', exerciseId, 'to day:', selectedDayId);
       //create a slot in the day
       const slotRes = await fetch(
-        `http://localhost:3001/api/days/${selectedDayId}/slots`,
+        `${import.meta.env.VITE_API_URL}/api/days/${selectedDayId}/slots`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -148,7 +148,7 @@ function RoutineDetail() {
 
       //add exercise to the slot
       const exerciseRes = await fetch(
-        `http://localhost:3001/api/slots/${slotData.id}/exercises`,
+        `${import.meta.env.VITE_API_URL}/api/slots/${slotData.id}/exercises`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -168,7 +168,7 @@ function RoutineDetail() {
 
   const deleteDay = async (dayId) => {
     try {
-      await fetch(`http://localhost:3001/api/days/${dayId}`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/days/${dayId}`, {
         method: 'DELETE',
       });
       await fetchRoutineDetails();
@@ -180,7 +180,7 @@ function RoutineDetail() {
   const fetchExerciseName = async (exerciseId) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/api/exercises/${exerciseId}`,
+        `${import.meta.env.VITE_API_URL}/api/exercises/${exerciseId}`,
       );
       const data = await response.json();
       //wger API translates the information, english is labeled as translation #2
