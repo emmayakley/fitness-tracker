@@ -411,4 +411,34 @@ app.get('/api/workoutlogs/exercise/:exerciseId', async (req, res) => {
   }
 });
 
+//GET inspirational quote for homepage from zen pages API
+app.get('/api/quote', async (req, res) => {
+  try {
+    const response = await axios.get('https://zenquotes.io/api/today');
+    res.json(response.data[0]);
+  } catch (error) {
+    console.error(
+      'Error fetching inspirational quote:',
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+//GET recent workout sessions
+app.get('/api/workoutsessions', async (req, res) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/workoutsession/`, {
+      headers: getHeaders(),
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      'Error fetching workout sessions:',
+      error.response?.data || error.message,
+    );
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
 app.listen(3001, () => console.log('Server running on port 3001'));
