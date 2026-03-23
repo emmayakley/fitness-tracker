@@ -1,6 +1,9 @@
 import { useState, useEffect, use } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+//For reference this is wger hierarchy for routines:
+//Routine -> Day -> Slot -> Slot Entry -> Exercise
+
 function RoutineDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -33,6 +36,7 @@ function RoutineDetail() {
       );
       const daysData = await daysRes.json();
 
+      //get slots for the day
       const daysWithExercises = await Promise.all(
         daysData.results.map(async (day) => {
           const slotsRes = await fetch(
@@ -48,6 +52,7 @@ function RoutineDetail() {
               );
               const entriesData = await entriesRes.json();
 
+              //get exercise for each slot entry
               const entriesWithNames = await Promise.all(
                 entriesData.results.map(async (entry) => {
                   const name = await fetchExerciseName(entry.exercise);
@@ -133,8 +138,6 @@ function RoutineDetail() {
       return;
     }
     try {
-      //debugging:
-      console.log('Adding exercise:', exerciseId, 'to day:', selectedDayId);
       //create a slot in the day
       const slotRes = await fetch(
         `${import.meta.env.VITE_API_URL}/api/days/${selectedDayId}/slots`,

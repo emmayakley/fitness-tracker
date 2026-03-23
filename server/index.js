@@ -240,11 +240,6 @@ app.get('/api/exercises/search', async (req, res) => {
       headers: getHeaders(),
       params: { term, language: 'english', format: 'json' },
     });
-    //Debugging: delete later
-    console.log(
-      'Search results:',
-      JSON.stringify(response.data.suggestions[0]),
-    );
     res.json(response.data);
   } catch (error) {
     console.error(
@@ -303,7 +298,9 @@ app.get('/api/exercises/:id', async (req, res) => {
   }
 });
 
-//====================Workout session=====================
+///////////////////////////////////////////////////////////////////////////////////////
+//Workout session routes
+///////////////////////////////////////////////////////////////////////////////////////
 
 //POST create a workout session
 app.post('/api/workoutsession', async (req, res) => {
@@ -378,7 +375,9 @@ app.post('/api/workoutlog', async (req, res) => {
   }
 });
 
-//====================Tracking Page=====================
+///////////////////////////////////////////////////////////////////////////////////////
+//Tracking Page Routes
+///////////////////////////////////////////////////////////////////////////////////////
 
 //GET all of the workout logs
 app.get('/api/workoutlogs', async (req, res) => {
